@@ -35,4 +35,12 @@ class HashMap
     index = hash(key) % length
     !map[index].nil?
   end
+
+  def remove(key)
+    index = hash(key) % length
+    map[index] = nil
+    map[index]
+  rescue StandardError
+    nil
+  end
 end
