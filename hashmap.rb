@@ -20,12 +20,14 @@ class HashMap
   end
 
   def set(key, value)
-    index = hash(key) % map.length
+    index = hash(key) % length
     map[index] = [key, value]
   end
 
   def get(key)
-    index = hash(key) % map.length
+    index = hash(key) % length
     map[index][1]
+  rescue StandardError
+    nil
   end
 end
