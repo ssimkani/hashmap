@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class HashMap
-  attr_reader :hash_map, :length, :load_factor, :threshold
+  attr_reader :hash_map, :length, :threshold
 
   def initialize(size)
     @hash_map = Array.new(size)
     @length = @hash_map.compact.length
     @load_factor = 0.8
-    @threshold = @length * @load_factor
+    @threshold = (@length * @load_factor).ceil
   end
 
   def hash(key)
@@ -26,6 +26,7 @@ class HashMap
 
   def get(key)
     index = hash(key) % length
+    raise_error(index)
     hash_map[index][1]
   rescue StandardError
     nil
@@ -33,11 +34,13 @@ class HashMap
 
   def has?(key)
     index = hash(key) % length
+    raise_error(index)
     !hash_map[index].nil?
   end
 
   def remove(key)
     index = hash(key) % length
+    raise_error(index)
     hash_map[index] = nil
     hash_map[index]
   rescue StandardError
