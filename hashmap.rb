@@ -23,4 +23,9 @@ class HashMap
     index = hash(key) % map.length
     map[index] = [key, value]
   end
+
+  def get(key)
+    index = hash(key) % map.length
+    map[index][1]
+  end
 end
