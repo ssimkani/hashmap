@@ -18,6 +18,15 @@ class HashMap
     hash_map[index] && hash_map[index][0] != key
   end
 
+  def linear_probe(key, value)
+    hash_map.each_with_index do |_, index|
+      if index.nil?
+        hash_map[index] = [key, value]
+        break
+      end
+    end
+  end
+
   def hash(key)
     hash_code = 0
     prime_number = 31
