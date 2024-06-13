@@ -18,4 +18,9 @@ class HashMap
 
     hash_code
   end
+
+  def set(key, value)
+    index = hash(key) % map.length
+    map[index] = [key, value]
+  end
 end
