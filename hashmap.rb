@@ -47,4 +47,12 @@ class HashMap
   def clear
     @hash_map = Array.new(hash_map.length)
   end
+
+  def keys
+    hash_map.compact.map(&:first)
+  end
+
+  def values
+    hash_map.compact.map(&:last)
+  end
 end
