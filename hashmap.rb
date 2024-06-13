@@ -30,4 +30,9 @@ class HashMap
   rescue StandardError
     nil
   end
+
+  def has?(key)
+    index = hash(key) % length
+    !map[index].nil?
+  end
 end
