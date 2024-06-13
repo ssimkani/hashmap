@@ -55,4 +55,12 @@ class HashMap
   def values
     hash_map.compact.map(&:last)
   end
+
+  def entries
+    hash_map.compact
+  end
+
+  def raise_error(index)
+    raise IndexError if index.negative? || index >= length
+  end
 end
