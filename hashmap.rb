@@ -7,7 +7,11 @@ class HashMap
     @hash_map = Array.new(size)
     @length = @hash_map.compact.length
     @load_factor = 0.8
-    @threshold = (@length * @load_factor).ceil
+    @threshold = @length * @load_factor
+  end
+
+  def increase_size
+    @hash_map += Array.new(length)
   end
 
   def hash(key)
@@ -22,6 +26,7 @@ class HashMap
   def set(key, value)
     index = hash(key) % length
     hash_map[index] = [key, value]
+    increase_size if hash_map.compact.length > threshold
   end
 
   def get(key)
