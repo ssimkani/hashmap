@@ -14,6 +14,10 @@ class HashMap
     @hash_map += Array.new(length)
   end
 
+  def linear_probe?(key, index)
+    hash_map[index] && hash_map[index][0] != key
+  end
+
   def hash(key)
     hash_code = 0
     prime_number = 31
