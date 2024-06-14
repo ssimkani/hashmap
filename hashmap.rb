@@ -4,6 +4,7 @@ class HashMap
   attr_reader :hash_map, :length, :threshold
 
   def initialize(size)
+    @size = size
     @hash_map = Array.new(size)
     @length = @hash_map.compact.length
     @load_factor = 0.8
@@ -11,7 +12,8 @@ class HashMap
   end
 
   def increase_size
-    @hash_map += Array.new(length)
+    @hash_map += Array.new(@size)
+    @size *= 2
   end
 
   def linear_probe?(key, index)
@@ -37,7 +39,7 @@ class HashMap
   end
 
   def set(key, value)
-    index = hash(key) % length
+    index = hash(key) % @size
     if linear_probe?(key, index)
       linear_probe(key, value)
     else
@@ -47,7 +49,7 @@ class HashMap
   end
 
   def get(key)
-    index = hash(key) % length
+    index = hash(key) % @size
     raise_error(index)
     hash_map[index][1]
   rescue StandardError
@@ -55,13 +57,13 @@ class HashMap
   end
 
   def has?(key)
-    index = hash(key) % length
+    index = hash(key) % @size
     raise_error(index)
     !hash_map[index].nil?
   end
 
   def remove(key)
-    index = hash(key) % length
+    index = hash(key) % @size
     raise_error(index)
     hash_map[index] = nil
     hash_map[index]
@@ -89,3 +91,10 @@ class HashMap
     raise IndexError if index.negative? || index >= length
   end
 end
+
+hash_table = HashMap.new(10)
+
+hash_table.set('hello', 'world')
+hash_table.set('hello', 'world2')
+
+p hash_table.entries
