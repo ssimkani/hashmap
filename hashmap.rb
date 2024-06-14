@@ -20,7 +20,7 @@ class HashMap
 
   def linear_probe(key, value)
     hash_map.each_with_index do |_, index|
-      if index.nil?
+      if hash_map[index].nil?
         hash_map[index] = [key, value]
         break
       end
