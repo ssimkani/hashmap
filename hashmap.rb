@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Class for the Hashmap data structure
 class HashMap
   attr_reader :hash_map, :length, :threshold
 
@@ -16,15 +17,18 @@ class HashMap
     @size *= 2
   end
 
-  def linear_probe?(key, index)
+  def collision?(key, index)
     hash_map[index] && hash_map[index][0] != key
   end
 
-  def linear_probe(key, value)
-    hash_map.each_with_index do |_, index|
-      if hash_map[index].nil?
+  def find_nil_bucket(key, value)
+    index = 0
+    hash_map.each do |entry|
+      if entry.nil?
         hash_map[index] = [key, value]
         break
+      else
+        index += 1
       end
     end
   end
@@ -40,8 +44,8 @@ class HashMap
 
   def set(key, value)
     index = hash(key) % @size
-    if linear_probe?(key, index)
-      linear_probe(key, value)
+    if collision?(key, index)
+      find_nil_bucket(key, value)
     else
       hash_map[index] = [key, value]
     end
