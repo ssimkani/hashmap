@@ -38,7 +38,11 @@ class HashMap
 
   def set(key, value)
     index = hash(key) % length
-    hash_map[index] = [key, value]
+    if linear_probe?(key, index)
+      linear_probe(key, value)
+    else
+      hash_map[index] = [key, value]
+    end
     increase_size if hash_map.compact.length > threshold
   end
 
