@@ -64,6 +64,8 @@ class HashMap
 
   def has?(key)
     index = hash(key) % @size
+    return !!hash_map.find(proc { false }) { |entry| entry[0] == key } if collision?(key, index)
+
     raise_error(index)
     !hash_map[index].nil?
   end
