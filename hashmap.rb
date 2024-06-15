@@ -54,6 +54,8 @@ class HashMap
 
   def get(key)
     index = hash(key) % @size
+    return hash_map.find { |entry| entry[0] == key }[1] if collision?(key, index)
+
     raise_error(index)
     hash_map[index][1]
   rescue StandardError
