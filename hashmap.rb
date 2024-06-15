@@ -54,9 +54,9 @@ class HashMap
 
   def get(key)
     index = hash(key) % @size
+    raise_error(index)
     return hash_map.find { |entry| entry[0] == key }[1] if collision?(key, index)
 
-    raise_error(index)
     hash_map[index][1]
   rescue StandardError
     nil
@@ -73,8 +73,14 @@ class HashMap
   def remove(key)
     index = hash(key) % @size
     raise_error(index)
-    hash_map[index] = nil
-    hash_map[index]
+    if collision?(key, index)
+      deleted_entry = hash_map.find { |entry| entry[0] == key }
+      hash_map.map! { |entry| entry[0] == key ? nil : entry }
+    else
+      deleted_entry = hash_map[index]
+      hash_map[index] = nil
+    end
+    deleted_entry
   rescue StandardError
     nil
   end
