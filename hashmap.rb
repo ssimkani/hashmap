@@ -1,15 +1,23 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
+
 # Class for the Hashmap data structure
 class HashMap
-  attr_reader :hash_map, :length, :threshold
+  attr_reader :hash_map
 
   def initialize(size)
     @size = size
     @hash_map = Array.new(size)
-    @length = @hash_map.compact.length
     @load_factor = 0.8
-    @threshold = @length * @load_factor
+  end
+
+  def length
+    hash_map.compact.length
+  end
+
+  def threshold
+    @size * @load_factor
   end
 
   def increase_size
@@ -49,7 +57,8 @@ class HashMap
     else
       hash_map[index] = [key, value]
     end
-    increase_size if hash_map.compact.length > threshold
+
+    increase_size if length > threshold
   end
 
   def get(key)
@@ -58,8 +67,6 @@ class HashMap
     return hash_map.find { |entry| entry[0] == key }[1] if collision?(key, index)
 
     hash_map[index][1]
-  rescue StandardError
-    nil
   end
 
   def has?(key)
@@ -102,13 +109,15 @@ class HashMap
   end
 
   def raise_error(index)
-    raise IndexError if index.negative? || index >= length
+    raise IndexError if index.negative? || index >= @size
   end
 end
 
 hash_table = HashMap.new(10)
 
 hash_table.set('hello', 'world')
-hash_table.set('hello', 'world2')
 
+hash_table.set('hello1', 'world1')
+
+p hash_table.get('hello')
 p hash_table.entries
