@@ -2,8 +2,6 @@
 
 require_relative 'linked_list'
 
-require 'pry-byebug'
-
 # Class for the Hashmap data structure
 class HashMap
   attr_reader :hash_map, :length, :size
@@ -20,7 +18,10 @@ class HashMap
   end
 
   def get_index(key)
-    hash(key) % @size
+    index = hash(key) % @size
+    raise IndexError if index.negative? || index >= @size
+
+    index
   end
 
   def increase_size
@@ -37,7 +38,7 @@ class HashMap
     hash_code = 0
     prime_number = 31
 
-    key.each_char { |char| hash_code = prime_number * hash_code + char.ord }
+    key.to_s.each_char { |char| hash_code = prime_number * hash_code + char.ord }
 
     hash_code
   end
@@ -61,9 +62,7 @@ class HashMap
   def get(key)
     index = get_index(key)
     list = hash_map[index]
-    list.each { |entry| return entry[1] if entry[0] == key }
-    nil
-  rescue StandardError
+    list.each { |entry| return entry.value[1] if entry.value[0] == key }
     nil
   end
 
@@ -82,19 +81,19 @@ class HashMap
     list.each do |entry|
       if entry.value[0] == key
         list.remove_at(index_to_remove)
-        return entry
+        @length -= 1
+        return entry.value
       else
         index_to_remove += 1
       end
     end
-    @length -= 1
-  rescue StandardError
     nil
   end
 
   def clear
     @hash_map = Array.new(hash_map.length) { LinkedList.new }
     @length = 0
+    hash_map
   end
 
   def keys
@@ -114,17 +113,26 @@ class HashMap
   end
 end
 
-hash_table = HashMap.new(10)
+hash_table = HashMap.new(16)
 
-hash_table.set('John', 18)
-hash_table.set('Ryan', 20)
-hash_table.set('Joseph', 19)
-hash_table.set('Miracle', 21)
-hash_table.set('Akshar', 22)
-hash_table.set('Aishwarya', 23)
-hash_table.set('Abhishek', 24)
-hash_table.set('Amit', 25)
-hash_table.set('Akshay', 26)
+countries_and_capitals = [
+  ['USA', 'Washington DC'],
+  ['Canada', 'Ottawa'],
+  ['Mexico', 'Mexico City'],
+  ['Germany', 'Berlin'],
+  ['France', 'Paris'],
+  ['Italy', 'Rome'],
+  ['Spain', 'Madrid'],
+  ['Australia', 'Canberra'],
+  ['New Zealand', 'Wellington'],
+  ['China', 'Beijing'],
+  ['Japan', 'Tokyo'],
+  ['India', 'New Delhi'],
+  ['Russia', 'Moscow']
+]
 
-puts hash_table.hash_map
-puts hash_table.size
+countries_and_capitals.each do |country_and_capital|
+  hash_table.set(country_and_capital[0], country_and_capital[1])
+end
+
+puts hash_table.entries
