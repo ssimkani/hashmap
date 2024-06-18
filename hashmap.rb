@@ -1,43 +1,35 @@
 # frozen_string_literal: true
 
+require_relative 'linked_list'
+
 require 'pry-byebug'
 
 # Class for the Hashmap data structure
 class HashMap
-  attr_reader :hash_map
+  attr_reader :hash_map, :length, :size
 
   def initialize(size)
     @size = size
-    @hash_map = Array.new(size)
+    @hash_map = Array.new(size) { LinkedList.new }
     @load_factor = 0.8
-  end
-
-  def length
-    hash_map.compact.length
+    @length = 0
   end
 
   def threshold
-    @size * @load_factor
+    size * @load_factor
+  end
+
+  def get_index(key)
+    hash(key) % @size
   end
 
   def increase_size
-    @hash_map += Array.new(@size)
+    old_hash_map = @hash_map.compact
     @size *= 2
-  end
-
-  def collision?(key, index)
-    hash_map[index] && hash_map[index][0] != key
-  end
-
-  def find_nil_bucket(key, value)
-    index = 0
-    hash_map.each do |entry|
-      if entry.nil?
-        hash_map[index] = [key, value]
-        break
-      else
-        index += 1
-      end
+    @hash_map = Array.new(@size) { LinkedList.new }
+    @length = 0
+    old_hash_map.each do |list|
+      list.each { |entry| set(entry.value[0], entry.value[1]) }
     end
   end
 
@@ -51,73 +43,88 @@ class HashMap
   end
 
   def set(key, value)
-    index = hash(key) % @size
-    if collision?(key, index)
-      find_nil_bucket(key, value)
-    else
-      hash_map[index] = [key, value]
-    end
+    index = get_index(key)
+    list = hash_map[index]
+    same_key = false
+    list.each do |entry|
+      next unless entry.value[0] == key
 
-    increase_size if length > threshold
+      entry.value[1] = value
+      same_key = true
+      break
+    end
+    list.append([key, value]) unless same_key
+    @length += 1
+    increase_size if @length > threshold
   end
 
   def get(key)
-    index = hash(key) % @size
-    raise_error(index)
-    return hash_map.find { |entry| entry[0] == key }[1] if collision?(key, index)
-
-    hash_map[index][1]
+    index = get_index(key)
+    list = hash_map[index]
+    list.each { |entry| return entry[1] if entry[0] == key }
+    nil
+  rescue StandardError
+    nil
   end
 
   def has?(key)
-    index = hash(key) % @size
-    return !!hash_map.find(proc { false }) { |entry| entry[0] == key } if collision?(key, index)
-
-    raise_error(index)
-    !hash_map[index].nil?
+    index = get_index(key)
+    list = hash_map[index]
+    list.each { |entry| return true if entry.value[0] == key }
+    false
   end
 
   def remove(key)
-    index = hash(key) % @size
-    raise_error(index)
-    if collision?(key, index)
-      deleted_entry = hash_map.find { |entry| entry[0] == key }
-      hash_map.map! { |entry| entry[0] == key ? nil : entry }
-    else
-      deleted_entry = hash_map[index]
-      hash_map[index] = nil
+    index = get_index(key)
+    list = hash_map[index]
+    index_to_remove = 0
+
+    list.each do |entry|
+      if entry.value[0] == key
+        list.remove_at(index_to_remove)
+        return entry
+      else
+        index_to_remove += 1
+      end
     end
-    deleted_entry
+    @length -= 1
   rescue StandardError
     nil
   end
 
   def clear
-    @hash_map = Array.new(hash_map.length)
+    @hash_map = Array.new(hash_map.length) { LinkedList.new }
+    @length = 0
   end
 
   def keys
-    hash_map.compact.map(&:first)
+    arr_of_keys = []
+    hash_map.compact.each { |list| list.each { |entry| arr_of_keys << entry.value[0] } }
+    arr_of_keys
   end
 
   def values
-    hash_map.compact.map(&:last)
+    arr_of_values = []
+    hash_map.compact.each { |list| list.each { |entry| arr_of_values << entry.value[1] } }
+    arr_of_values
   end
 
   def entries
-    hash_map.compact
-  end
-
-  def raise_error(index)
-    raise IndexError if index.negative? || index >= @size
+    hash_map.select { |list| list.size.positive? }
   end
 end
 
 hash_table = HashMap.new(10)
 
-hash_table.set('hello', 'world')
+hash_table.set('John', 18)
+hash_table.set('Ryan', 20)
+hash_table.set('Joseph', 19)
+hash_table.set('Miracle', 21)
+hash_table.set('Akshar', 22)
+hash_table.set('Aishwarya', 23)
+hash_table.set('Abhishek', 24)
+hash_table.set('Amit', 25)
+hash_table.set('Akshay', 26)
 
-hash_table.set('hello1', 'world1')
-
-p hash_table.get('hello')
-p hash_table.entries
+puts hash_table.hash_map
+puts hash_table.size
