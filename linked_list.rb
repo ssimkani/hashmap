@@ -75,6 +75,14 @@ class LinkedList
     nil
   end
 
+  def each
+    current_node = @head
+    while current_node
+      yield current_node
+      current_node = current_node.next_node
+    end
+  end
+
   # Inserts a new node with a given value and index
   def insert_at(value, index)
     index += size + 1 if index.negative?
@@ -112,12 +120,13 @@ class LinkedList
 
   # Prints the linked list
   def to_s
+    result = ''
     current = @head
     until current.nil?
-      print "( #{current.value} ) -> "
+      result += "( #{current.value} ) -> "
       current = current.next_node
     end
-    puts 'nil'
+    "#{result}nil"
   end
 
   # Returns the head value
