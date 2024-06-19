@@ -13,10 +13,12 @@ class HashMap
     @length = 0
   end
 
+  # Calculates the threshold at which the hash map should be resized
   def threshold
     size * @load_factor
   end
 
+  # Calculates the index for the given key
   def get_index(key)
     index = hash(key) % @size
     raise IndexError if index.negative? || index >= @size
@@ -24,6 +26,7 @@ class HashMap
     index
   end
 
+  # Increases the size of the hash map
   def increase_size
     old_hash_map = @hash_map.compact
     @size *= 2
@@ -34,6 +37,7 @@ class HashMap
     end
   end
 
+  # Calculates the hash code for the given key
   def hash(key)
     hash_code = 0
     prime_number = 31
@@ -43,6 +47,7 @@ class HashMap
     hash_code
   end
 
+  # Adds a new key-value pair to the hash map
   def set(key, value)
     index = get_index(key)
     list = hash_map[index]
@@ -59,6 +64,7 @@ class HashMap
     increase_size if @length > threshold
   end
 
+  # Returns the value for the given key or nil if the key is not found
   def get(key)
     index = get_index(key)
     list = hash_map[index]
@@ -66,6 +72,7 @@ class HashMap
     nil
   end
 
+  # Returns true if the key is found in the hash map and false otherwise
   def has?(key)
     index = get_index(key)
     list = hash_map[index]
@@ -73,6 +80,7 @@ class HashMap
     false
   end
 
+  # Removes the key-value pair with the given key or returns nil if the key is not found
   def remove(key)
     index = get_index(key)
     list = hash_map[index]
@@ -90,24 +98,28 @@ class HashMap
     nil
   end
 
+  # Clears the hash map
   def clear
     @hash_map = Array.new(hash_map.length) { LinkedList.new }
     @length = 0
     hash_map
   end
 
+  # Returns the keys in the hash map inside of an array
   def keys
     arr_of_keys = []
     hash_map.compact.each { |list| list.each { |entry| arr_of_keys << entry.value[0] } }
     arr_of_keys
   end
 
+  # Returns all values
   def values
     arr_of_values = []
     hash_map.compact.each { |list| list.each { |entry| arr_of_values << entry.value[1] } }
     arr_of_values
   end
 
+  # Returns the entries or linked lists in the hash map
   def entries
     hash_map.select { |list| list.size.positive? }
   end
